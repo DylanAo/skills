@@ -1,0 +1,6 @@
+interface:
+  display_name: "Interactive Tutor · 互动渐进教学"
+  short_description: "Learn step by step with one question and adaptive feedback"
+  default_prompt: "Use $interactive-tutor to teach me this topic step by step, asking one question at a time and adapting to my answers."
+policy:
+  allow_implicit_invocation: true
