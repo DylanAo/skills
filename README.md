@@ -1,201 +1,118 @@
 # Skills
 
-可复用的个人 AI Agent 技能集合。当前面向 Codex，逐步收录学习、研究和日常工作中形成的技能。
-
-A growing collection of reusable AI agent skills, currently targeting Codex, developed through learning, research, and everyday work.
+可复用的个人 AI Agent 技能集合。每个技能一个独立目录，按分类按需安装。
+Reusable personal AI agent skills. One directory per skill; install by category as needed.
 
 [中文](#中文) · [English](#english)
 
 ## 中文
 
-### 仓库用途
+### 分类说明
 
-本仓库统一保存和维护 skill 源文件。每个 skill 是一个独立目录，用 `SKILL.md` 描述适用场景和执行方式，可按需安装。仓库用于持续增加技能，不局限于某个学科、论文或项目。
+- **Core（核心，推荐安装）**：通用基础能力，适合所有使用者，且可能被其他技能依赖。
+- **Courses（专题课程，按需安装）**：面向特定学习目标的课程大纲，只对该主题感兴趣时安装；依赖 Core 中的教学技能。
+
+技能平铺安装到宿主技能目录即可，分类仅用于选择，不需要按类建文件夹。
 
 ### 技能目录
 
-| Skill | 用途 | 调用 |
-|---|---|---|
-| [interactive-tutor](interactive-tutor/SKILL.md) | 通用互动学习：小步讲解、一次一题、根据回答调整 | `$interactive-tutor` |
+| Skill | 类别 | 用途 | 调用 |
+|---|---|---|---|
+| [interactive-tutor](interactive-tutor/SKILL.md) | Core | 互动渐进教学：小步讲解、一次一题、按回答调整 | `$interactive-tutor` |
+| [agent-dev-tutor](agent-dev-tutor/SKILL.md) | Courses | Agent 扩展开发课程：Skill、Hook、MCP、子代理、插件、安全与独立 Agent | `$agent-dev-tutor` |
 
-### Interactive Tutor：互动渐进教学
+### 使用说明
 
-核心循环是：**讲一点 → 问一题 → 等待回答 → 针对反馈调整 → 继续学习**。
-
-适用于语言、数学、历史、艺术、编程、论文阅读、工作技能和日常知识。根据目标选择解释、例子、翻译、判断、实际练习或作品修改，而不是所有主题都使用公式推导。
-
-- 根据你的目标和已有基础选择起点。
-- 一次只检查一个核心问题，等待你的回答后继续。
-- 回答正确就推进，部分正确就修补关键缺口，不确定时换例子或降低难度。
-- 先处理追问和疑惑；题目条件不足时先修正题目。
-- 区分“讲过”和“真正检查过”，说明学习进度与尚未掌握的部分。
-- 支持中英文调用；默认跟随你的语言，也可指定教学语言。
-
-使用示例：
+**interactive-tutor**：核心循环是"讲一点 → 问一题 → 等待回答 → 按反馈调整"。适用于任意学科，支持中英文。
 
 ```text
-使用 $interactive-tutor 带我学习英语现在完成时。我懂一般过去时，每次讲完问我一题。
+使用 $interactive-tutor 带我学习 Python 循环，我懂变量，每次讲完问我一题。
 ```
+
+**agent-dev-tutor**：七课大纲，配合 interactive-tutor 授课，也可由支持自动匹配的宿主直接触发"教我 Agent 开发"。
 
 ```text
-使用 $interactive-tutor 带我入门水彩配色，先用简单的配色练习检查理解。
+使用 $agent-dev-tutor 带我入门 Agent 扩展开发，我有 Linux 基础。
 ```
 
-```text
-Use $interactive-tutor to teach me Python loops. I know variables; ask one question at a time.
-```
+### 安装
 
-也可说“带我一步步学”或“Teach me step by step”。支持自动选用技能的宿主可根据描述匹配；需要明确指定时使用 `$interactive-tutor`。
+将所需技能目录复制到宿主的技能目录（Codex 为 `${CODEX_HOME:-~/.codex}/skills`，Qoder 为 `~/.agents/skills`）。
 
-### 安装到 Codex
-
-先克隆或下载本仓库，再进入仓库根目录。以下命令将 `interactive-tutor` 复制到安装目录，默认使用 `~/.codex/skills`，设置了 `CODEX_HOME` 时使用其下的 `skills`。安装副本与仓库源文件分开维护。
-
-macOS / Linux：
+只装核心教学技能（多数人的选择）：
 
 ```sh
-skill_home="${CODEX_HOME:-$HOME/.codex}/skills"
-mkdir -p "$skill_home"
-if [ -e "$skill_home/interactive-tutor" ]; then
-  echo "Already installed. Review or back up the existing skill before updating."
-else
-  cp -R ./interactive-tutor "$skill_home/interactive-tutor"
-fi
+cp -R ./interactive-tutor ~/.agents/skills/
 ```
 
-Windows PowerShell：
+想学习 Agent 开发课程时，两个一起装（课程依赖教学技能）：
 
-```powershell
-$skillHome = if ($env:CODEX_HOME) {
-    Join-Path $env:CODEX_HOME 'skills'
-} else {
-    Join-Path $HOME '.codex/skills'
-}
-New-Item -ItemType Directory -Force -Path $skillHome | Out-Null
-$skillTarget = Join-Path $skillHome 'interactive-tutor'
-if (Test-Path $skillTarget) {
-    Write-Output 'Already installed. Review or back up the existing skill before updating.'
-} else {
-    Copy-Item -Recurse -Path './interactive-tutor' -Destination $skillTarget
-}
+```sh
+cp -R ./interactive-tutor ./agent-dev-tutor ~/.agents/skills/
 ```
 
-安装后在下一轮尝试 `$interactive-tutor`。如果当前会话没有刷新技能列表，开启新会话后再调用。更新时先比较或备份已有安装，再将仓库中的对应目录复制过去；修改源文件不会自动同步到安装副本。
+Windows 可用资源管理器或 `Copy-Item -Recurse` 完成同样的复制。安装后开新会话生效；源文件与安装副本分开维护，更新前先备份已有安装。
 
-### 仓库结构与新增技能
+### 新增技能
 
-```text
-skills/
-├── README.md
-├── AGENTS.md
-├── .gitignore
-└── interactive-tutor/
-    ├── SKILL.md
-    └── agents/
-        └── openai.yaml
-```
-
-新增 skill 时，在根目录创建一个小写连字符命名的文件夹，编写包含 `name`、`description` 前置信息的 `SKILL.md`，再更新本 README 的中英文技能目录。按实际需要加入脚本、参考资料或 UI 元数据，避免提交个人资料和凭据。
-
-这些技能是行为指导，不保证每次输出完全一致或事实正确。互动教学不会自动建立跨会话学习数据库；接续学习可使用对话摘要。
+在根目录新建小写连字符命名的目录，编写含 `name`、`description` 的 `SKILL.md`，归入 Core 或 Courses 并更新本 README 的中英文目录。不要提交个人资料与凭据。技能是行为指导，不保证输出完全一致或事实正确。
 
 ### 许可证
 
-本仓库采用 [MIT 许可证](LICENSE)。允许使用、修改、分发和商业使用；分发时须保留版权声明及许可声明。内容按原样提供，不附带担保，完整条款见许可证文件。
+[MIT](LICENSE)。
 
 ## English
 
-### Purpose
+### Categories
 
-This repository is the source of truth for a growing collection of reusable skills. Each skill lives in its own directory and describes its scope and workflow in `SKILL.md`. Install only the skills you need. The collection is not tied to a particular subject, paper, or project.
+- **Core (recommended)**: general-purpose capabilities useful to everyone; other skills may depend on them.
+- **Courses (optional)**: lesson outlines for specific learning goals, installed only when interested; they rely on the Core tutoring skill.
+
+Install skills flat into the host skill directory. Categories guide selection only; no category folders are required.
 
 ### Skill catalog
 
-| Skill | Purpose | Invocation |
-|---|---|---|
-| [interactive-tutor](interactive-tutor/SKILL.md) | Interactive learning through short explanations, one question at a time, and adaptive feedback | `$interactive-tutor` |
+| Skill | Category | Purpose | Invocation |
+|---|---|---|---|
+| [interactive-tutor](interactive-tutor/SKILL.md) | Core | Interactive tutoring: short explanations, one question at a time, adaptive feedback | `$interactive-tutor` |
+| [agent-dev-tutor](agent-dev-tutor/SKILL.md) | Courses | Agent extension course: Skills, Hooks, MCP, subagents, plugins, security, standalone agents | `$agent-dev-tutor` |
 
-### Interactive Tutor
+### Usage
 
-The learning loop is: **explain a little → ask one question → wait for the answer → adapt → continue**.
-
-Use it for languages, mathematics, history, arts, programming, paper reading, professional skills, and everyday knowledge. Exercises match the subject: explanation, translation, prediction, practical tasks, or revisions to a piece of work.
-
-- Start from the learner's goals and existing knowledge.
-- Ask one focused question and wait for an actual answer.
-- Advance after a sound answer, repair the key gap after a partial answer, and simplify when needed.
-- Address clarification requests first and fix underspecified questions.
-- Distinguish material covered from understanding actually checked.
-- Invoke in English or Chinese; teaching follows your language unless you request another one. The skill instructions are currently written mainly in Chinese, with an English discovery description and explicit language guidance.
-
-Examples:
-
-```text
-Use $interactive-tutor to help me learn the present perfect. I already understand the past simple.
-```
-
-```text
-Use $interactive-tutor to teach me watercolor color mixing through small practical exercises.
-```
+**interactive-tutor** runs the loop "explain a little → ask one question → wait → adapt". Any subject, English or Chinese.
 
 ```text
 Use $interactive-tutor to teach me Python loops. I know variables; ask one question at a time.
 ```
 
-Natural requests such as “Teach me step by step” can also match the skill in hosts supporting automatic selection. Use `$interactive-tutor` to select it explicitly.
-
-### Install in Codex
-
-Clone or download this repository and open a terminal at its root. The commands below copy the skill into `$CODEX_HOME/skills`, or `~/.codex/skills` when `CODEX_HOME` is unset. They preserve an existing installation.
-
-macOS / Linux:
-
-```sh
-skill_home="${CODEX_HOME:-$HOME/.codex}/skills"
-mkdir -p "$skill_home"
-if [ -e "$skill_home/interactive-tutor" ]; then
-  echo "Already installed. Review or back up the existing skill before updating."
-else
-  cp -R ./interactive-tutor "$skill_home/interactive-tutor"
-fi
-```
-
-Windows PowerShell:
-
-```powershell
-$skillHome = if ($env:CODEX_HOME) {
-    Join-Path $env:CODEX_HOME 'skills'
-} else {
-    Join-Path $HOME '.codex/skills'
-}
-New-Item -ItemType Directory -Force -Path $skillHome | Out-Null
-$skillTarget = Join-Path $skillHome 'interactive-tutor'
-if (Test-Path $skillTarget) {
-    Write-Output 'Already installed. Review or back up the existing skill before updating.'
-} else {
-    Copy-Item -Recurse -Path './interactive-tutor' -Destination $skillTarget
-}
-```
-
-Try `$interactive-tutor` on your next turn. If the skill list has not refreshed, start a new conversation. To update, compare or back up the installed version before replacing it with the corresponding source directory. Source edits do not automatically update installed copies.
-
-### Layout and new skills
+**agent-dev-tutor** is a seven-lesson outline taught through interactive-tutor, or triggered automatically by requests like "teach me agent development".
 
 ```text
-skills/
-├── README.md
-├── AGENTS.md
-├── .gitignore
-└── interactive-tutor/
-    ├── SKILL.md
-    └── agents/
-        └── openai.yaml
+Use $agent-dev-tutor to teach me agent extension development. I have basic Linux experience.
 ```
 
-Add each new skill as a lowercase, hyphenated directory at the root. Include a `SKILL.md` with `name` and `description` frontmatter, and update both language versions of the catalog. Add scripts, references, or UI metadata only when needed. Keep personal materials and credentials out of the repository.
+### Install
 
-Skills guide behavior; they do not guarantee identical responses or factual correctness. Interactive Tutor does not automatically maintain a cross-session learning database. A conversation summary can help resume learning.
+Copy each skill directory into your host's skill directory (`${CODEX_HOME:-~/.codex}/skills` for Codex, `~/.agents/skills` for Qoder).
+
+Core tutoring skill only (the common choice):
+
+```sh
+cp -R ./interactive-tutor ~/.agents/skills/
+```
+
+For the agent development course, install both (the course depends on the tutor):
+
+```sh
+cp -R ./interactive-tutor ./agent-dev-tutor ~/.agents/skills/
+```
+
+On Windows, copy the directories with Explorer or `Copy-Item -Recurse`. Start a new session after installing. Source files and installed copies are maintained separately; back up existing installations before updating.
+
+### Adding skills
+
+Create a lowercase, hyphenated directory at the root with a `SKILL.md` containing `name` and `description` frontmatter, assign it to Core or Courses, and update both language catalogs above. Keep personal materials and credentials out of the repository. Skills guide behavior; they do not guarantee identical or factually correct output.
 
 ### License
 
-This repository is licensed under the [MIT License](LICENSE), which permits use, modification, distribution, and commercial use, provided the copyright and permission notices are retained. The material is provided as is, without warranty. See the license file for the full terms.
+[MIT](LICENSE).
